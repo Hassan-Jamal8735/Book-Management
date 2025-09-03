@@ -8,19 +8,23 @@ use App\Models\Category;
 
 class BookController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $query = Book::with('categories');
 
-        if ($request->has('category')) {
-            $query->whereHas('categories', function($q) use ($request) {
-                $q->where('id', $request->category);
+        if ($request->filled('category')) {
+            $query->whereHas('categories', function ($q) use ($request) {
+                $q->where('categories.id', $request->category); // ✅ disambiguate id
             });
         }
 
         $books = $query->get();
-        return view('books.index', compact('books'));
+        $categories = Category::all();
+
+        return view('books.index', compact('books', 'categories'));
     }
+
+
 
     public function create()
     {
@@ -45,7 +49,7 @@ class BookController extends Controller
         $validated['user_id'] = auth()->id();
 
         $book = Book::create($validated);
-        $book->categories()->sync($request->categories);
+        $book->categories()->sync($request->categories ?? []);
 
         return redirect()->route('books.index')->with('success', 'Book created successfully');
     }
