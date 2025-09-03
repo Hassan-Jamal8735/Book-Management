@@ -18,7 +18,7 @@ class BookController extends Controller
             });
         }
 
-        $books = $query->get();
+        $books = $query->paginate(12);
         $categories = Category::all();
 
         return view('books.index', compact('books', 'categories'));
