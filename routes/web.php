@@ -31,5 +31,13 @@ Route::prefix('api')->group(function () {
     });
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::resource('books', BookController::class);
+    Route::resource('categories', CategoryController::class)->only(['index','create','store']);
+});
 
 require __DIR__.'/auth.php';
